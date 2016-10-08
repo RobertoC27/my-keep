@@ -1,19 +1,3 @@
-import { createStore, combineReducers } from 'redux';
-import React from 'react';
-const { Component } = React;
-import ReactDOM from 'react-dom';
-import { Provider, connect } from 'react-redux';
-import v4 from 'uuid-v4';
-import { todos } from './reducers/todos';
-import { visibilityFilter } from './reducers/visibility';
-
-
-import {listsTodos} from './reducers/todos';
-import expect from 'expect';
-import deepFreeze from 'deep-freeze';
-
-
-
 const loadState = () => {
   try{
     let result = JSON.parse(localStorage.getItem('state'));
