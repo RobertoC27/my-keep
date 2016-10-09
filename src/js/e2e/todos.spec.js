@@ -1,7 +1,4 @@
 import todos from '../reducers/todos';
-
-
-
 const stateBefore = [
   {
     archived: false,
@@ -402,4 +399,140 @@ const testDeleteTodo = () =>{
 }
 
 testDeleteTodo();
-console.log("borrado con exito");
+console.log("todo borrado con exito");
+
+
+const testSetTodoListColor = () => {
+
+  const action = {
+    type:  'SET_TODOLIST_COLOR',
+    payload: {
+      id: 65,
+      color: 'A4FC33',
+      modification: 'junio'
+    }
+  }
+
+  const stateAfter = [
+    {
+      archived: false,
+      creation : 'enero',
+      modification: 'enero',
+      visibilityFilter: 'SHOW_ALL',
+      id: 88,
+      color : 'BFBA42',
+      title: 'viva las vegas',
+      todos : [
+        {
+          id: 0,
+          text: 'llegar al hotel',
+          completed: false,
+          listID: 88
+        },
+        {
+          id: 1,
+          text: 'Banarme',
+          completed: false,
+          listID: 88
+        }
+      ]
+    },
+    {
+      archived: false,
+      creation : 'enero',
+      modification: 'junio',
+      visibilityFilter: 'SHOW_ALL',
+      id: 65,
+      color : 'A4FC33',
+      title: 'ir al super',
+      todos : [
+        {
+          id: 0,
+          text: 'cereal',
+          completed: false,
+          listID: 65
+        },
+        {
+          id: 1,
+          text: 'yogurt',
+          completed: false,
+          listID: 65
+        }
+      ]
+    }
+  ]
+
+  deepFreeze(stateBefore);
+  deepFreeze(action);
+  expect(listsTodos(stateBefore, action)).toEqual(stateAfter);
+}
+
+testSetTodoListColor();
+console.log('color cambiado exitosamente');
+
+const testArchiveTodoList = () => {
+  const action = {
+    type: 'ARCHIVE_TODOLIST',
+    payload: {
+      id: 88,
+      modification: 'julio',
+      archived: true
+    }
+  }
+
+  const stateAfter = [
+    {
+      archived: true,
+      creation : 'enero',
+      modification: 'julio',
+      visibilityFilter: 'SHOW_ALL',
+      id: 88,
+      color : 'BFBA42',
+      title: 'viva las vegas',
+      todos : [
+        {
+          id: 0,
+          text: 'llegar al hotel',
+          completed: false,
+          listID: 88
+        },
+        {
+          id: 1,
+          text: 'Banarme',
+          completed: false,
+          listID: 88
+        }
+      ]
+    },
+    {
+      archived: false,
+      creation : 'enero',
+      modification: 'enero',
+      visibilityFilter: 'SHOW_ALL',
+      id: 65,
+      color : 'BFBA42',
+      title: 'ir al super',
+      todos : [
+        {
+          id: 0,
+          text: 'cereal',
+          completed: false,
+          listID: 65
+        },
+        {
+          id: 1,
+          text: 'yogurt',
+          completed: false,
+          listID: 65
+        }
+      ]
+    }
+  ];
+
+  deepFreeze(stateBefore);
+  deepFreeze(action);
+  expect(listsTodos(stateBefore, action)).toEqual(stateAfter);
+}
+
+testArchiveTodoList();
+console.log('todolist archivado exitosamente');

@@ -44,10 +44,11 @@ const todos = (state = [], action) => {
 }
 
 const listTodo = (state = {}, action) => {
+  let a;
   switch (action.type){
     case 'ADD_TODO':
       if(state.id === action.payload.listID){
-        let a = {
+        a = {
           type: action.type,
           payload:{
             id:action.payload.id,
@@ -63,16 +64,7 @@ const listTodo = (state = {}, action) => {
         }
       }
 
-    case 'TOGGLE_TODO':
-      if(state.id === action.payload.listID){
-        
-        return {
-          ...state,
-          todos: todos(state.todos, action),
-          modification: action.payload.modification
-        };
-      }
-
+      
     case 'SET_TODOLIST_VISIBILITY_FILTER':
       if(state.id === action.payload.id){
         
@@ -83,6 +75,7 @@ const listTodo = (state = {}, action) => {
         };
       }
 
+    case 'TOGGLE_TODO':
     case 'DELETE_TODO':
       if(state.id === action.payload.listID){
         
@@ -91,6 +84,17 @@ const listTodo = (state = {}, action) => {
           todos: todos(state.todos, action),
           modification: action.payload.modification
         };
+      }
+
+    case 'SET_TODOLIST_COLOR':
+    case 'SET_TODOLIST_TITLE':
+    case 'ARCHIVE_TODOLIST':
+      if(state.id === action.payload.id){
+        return{
+          ...state,
+          ...action.payload
+
+        }
       }
     default:
       return state;
@@ -108,25 +112,14 @@ const listsTodos  = (state = [], action) => {
           visibilityFilter : 'SHOW_ALL'
         }
       ]
+
     case 'ADD_TODO':
     case 'TOGGLE_TODO':
     case 'SET_TODOLIST_TITLE':
     case 'DELETE_TODO':
     case 'SET_TODOLIST_VISIBILITY_FILTER':
-
-
-
-
-
     case 'SET_TODOLIST_COLOR':
     case 'ARCHIVE_TODOLIST':
-
-
-
-
-
-
-
       return state.map( lista => listTodo(lista, action));
     default:
       return state;
