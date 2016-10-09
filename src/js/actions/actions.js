@@ -69,4 +69,23 @@ const addTodo = (id, text, listID, modification) => (
     }
   }
 );
-export {addTodoList, addNote, setNoteTitle, toggleTodo, setTodoListTitle, addTodo}
+
+const setTodoListVisibilityFilter = (id, visibilityFilter, modification) => (
+  {
+    type : 'SET_TODOLIST_VISIBILITY_FILTER',
+    payload: {
+      id,
+      visibilityFilter,
+      modification
+    }
+  }
+);
+export {
+  addTodoList,
+  addNote,
+  setNoteTitle,
+  toggleTodo,
+  setTodoListTitle,
+  addTodo,
+  setTodoListVisibilityFilter
+}

@@ -11,7 +11,7 @@ import '../styles/index.scss';
 import {listsTodos} from './reducers/todos';
 import { notes } from './reducers/notes';
 
-import { addTodoList, addNote, setNoteTitle, toggleTodo, setTodoListTitle, addTodo } from './actions/actions';
+import { addTodoList, addNote, setNoteTitle, toggleTodo, setTodoListTitle, addTodo, setTodoListVisibilityFilter } from './actions/actions';
 
 
 const loadState = () => {
@@ -98,7 +98,13 @@ const TodoList = ({ todos, onTodoClicked, color, title, onUpdate, id, currentVis
       }
     </ul>
 
-    
+    <Footer
+      currentVisibilityFilter = {currentVisibilityFilter}
+      listID = {id}
+      onFilterClicked = {
+        (v,i)=>{store.dispatch(setTodoListVisibilityFilter(i, v, Date()) )}
+      }
+    />
   </div>
 );
 
@@ -167,12 +173,14 @@ const Reminders = ({listsTodos, notes}) =>
                 <TodoList
                   key = {listTodo.id}
                   color = {listTodo.color}
-                  todos = {listTodo.todos}
+                  todos = {getVisibleTodos(listTodo.todos, listTodo.visibilityFilter) }
                   title = {listTodo.title}
                   id = {listTodo.id}
                   currentVisibilityFilter = {listTodo.visibilityFilter}
                   onTodoClicked = {
-                    () =>{}
+                    (todo) =>{
+                      store.dispatch(toggleTodo(todo.id, listTodo.id, Date() ));
+                    }
                   }
                   onUpdate = {
                     (title) => {
@@ -230,7 +238,7 @@ const AddTodo = ({color, listID}) => {
         onClick={
           () => { 
             if (remind.value !== '') {
-              console.log(addTodo(v4(), remind.value, listID, Date() ));
+              
               store.dispatch(
                 addTodo(v4(), remind.value, listID, Date() )
               );
