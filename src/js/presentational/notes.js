@@ -13,11 +13,12 @@ const Note = ({ note, onUpdate, id, onArchive }) => (
       id = {id}
       color = {note.color}
     />
+    
+    <div class = 'clear'></div>
+    <div >{note.content}</div>
     <ArchiveMe
       onArchive = {onArchive}
     />
-    <div class = 'clear'></div>
-    <div >{note.content}</div>
   </div>
 );
 

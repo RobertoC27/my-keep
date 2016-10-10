@@ -1,7 +1,7 @@
 const visibilityFilter = (state = {visibilityFilter:'SHOW_ALL', search:''}, action) => {
   switch(action.type){
     case 'SET_VISIBILITY_FILTER':
-    case 'SET_SEARCH':
+    case 'SET_VISIBILITY_SEARCH':
       return {
       	...state,
       	...action.payload

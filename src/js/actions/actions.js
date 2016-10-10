@@ -83,7 +83,7 @@ const setTodoListVisibilityFilter = (id, visibilityFilter, modification) => (
 
 const searchReminder = (search) => (
   {
-    type: 'SET_SEARCH',
+    type: 'SET_VISIBILITY_SEARCH',
     payload: {
       search
     }

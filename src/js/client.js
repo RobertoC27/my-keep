@@ -3,6 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import undoable from 'redux-undo';
 import { ActionCreators } from 'redux-undo';
+import { filterActions } from 'redux-ignore';
 
 import { todos } from './reducers/todos';
 import { visibilityFilter } from './reducers/visibility';
@@ -44,12 +45,13 @@ const saveState = (state) => {
 
 const reminderApp = combineReducers(
   {
-    listsTodos,
-    notes,
-    visibilityFilter
+    listsTodos: filterActions(listsTodos, (action) => action.type.match(/TODO/) ),
+    notes: filterActions(notes, (action) => action.type.match(/NOTE/) ),
+    visibilityFilter: filterActions (visibilityFilter, (action) => action.type.match(/SET_VISIBILITY/) )
 
   }
 );
+
 
 const store = createStore(undoable(reminderApp, {limit: 10}), loadState());
 
