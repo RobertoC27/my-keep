@@ -99,47 +99,27 @@ const setVisibilityFilter = (visibilityFilter) => (
   }
 );
 
-const getVisibleTodos = (todos, visibilityFilter) => {
-  if(visibilityFilter === 'SHOW_ALL'){
-    return todos;
-  }
-
-  if(visibilityFilter === 'SHOW_COMPLETED'){
-    return todos.filter(t => t.completed);
-  }
-
-  if(visibilityFilter === 'SHOW_ACTIVE'){
-    return todos.filter(t => !t.completed);
-  }
-}
-
-const getVisbleReminders = (reminders, visibilityFilter, search) => {
-  let r = [];
-  
-  for (var i = 0; i < reminders.length; i++) {
-    if (reminders[i].title.includes(search) && (reminders[i].archived === false) ) {
-      r.push(reminders[i])
+const archiveNote = (id, modification) => (
+  {
+    type: 'ARCHIVE_NOTE',
+    payload: {
+      id,
+      modification,
+      archived: true
     }
   }
+);
 
-  if (r.length > 0) {
-    
-    if (visibilityFilter === 'SHOW_ALL') {
-      return r;
+const archiveList = (id, modification) => (
+  {
+    type: 'ARCHIVE_TODOLIST',
+    payload: {
+      id,
+      modification,
+      archived: true
     }
-    if (visibilityFilter === 'SHOW_NOTE' && (r[0].todos === undefined )) {
-      
-      return r;
-    }
-    if (visibilityFilter === 'SHOW_LIST' && (r[0].todos !== undefined )) {
-      
-      return r;
-    }
-    return [];
   }
-  
-  return r;
-}
+);
 
 export {
   addTodoList,
@@ -151,6 +131,6 @@ export {
   setTodoListVisibilityFilter,
   searchReminder,
   setVisibilityFilter,
-  getVisibleTodos,
-  getVisbleReminders
+  archiveNote,
+  archiveList
 }

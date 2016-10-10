@@ -35,6 +35,28 @@ const FilterLink = ({ visibilityFilter, currentVisibilityFilter, onFilterClicked
     { children }</a>
 }
 
+const ArchiveMe = ({ onArchive }) => {
+  return (
+    <div>
+      <button
+        onClick = {onArchive}
+      >Archive</button>
+    </div>
+  );
+}
 
+const TimeTravel = ({undo, redo}) => (
+  <div>
+    <button
+      onClick = {undo}
+    >
+    Un-do</button>
+    <button
+      onClick = {redo}
+    >
+    Re-do</button>
+    
+  </div>
+);
 
-export { Title, FilterLink };
+export { Title, FilterLink, ArchiveMe, TimeTravel };

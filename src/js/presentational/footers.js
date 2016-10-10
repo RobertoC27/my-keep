@@ -1,5 +1,5 @@
 import React from 'react';
-import { FilterLink } from './general';
+import { FilterLink, TimeTravel  } from './general';
 
 const Footer = ({ currentVisibilityFilter, onFilterClicked, listID }) => (
   <div class="todoFilter">
@@ -24,7 +24,7 @@ const Footer = ({ currentVisibilityFilter, onFilterClicked, listID }) => (
   </div>
 );
 
-const GeneralFooter = ({ currentVisibilityFilter, onFilterClicked}) => (
+const GeneralFooter = ({ currentVisibilityFilter, onFilterClicked, undo, redo }) => (
   <div class="todoFilter">
     Show:
     <FilterLink
@@ -44,6 +44,10 @@ const GeneralFooter = ({ currentVisibilityFilter, onFilterClicked}) => (
       currentVisibilityFilter={ currentVisibilityFilter }
       onFilterClicked={ onFilterClicked }
     >Todo-list</FilterLink>
+    <TimeTravel 
+      undo = {undo}
+      redo = {redo}
+    />
   </div>
 );
 

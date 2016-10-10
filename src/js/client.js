@@ -1,30 +1,31 @@
 import { createStore, combineReducers } from 'redux';
 import React from 'react';
-const { Component } = React;
 import ReactDOM from 'react-dom';
-import { Provider, connect } from 'react-redux';
-import v4 from 'uuid-v4';
+import undoable from 'redux-undo';
+import { ActionCreators } from 'redux-undo';
+
 import { todos } from './reducers/todos';
 import { visibilityFilter } from './reducers/visibility';
+
 import '../styles/index.scss';
 
 import {listsTodos} from './reducers/todos';
 import { notes } from './reducers/notes';
 
-import { Title, FilterLink } from './presentational/general';
-import { Todo } from './presentational/todolist';
+import { Title, FilterLink, ArchiveMe} from './presentational/general';
+import { Todo, TodoList } from './presentational/todolist';
 import { Footer, GeneralFooter} from './presentational/footers';
 import { Note } from './presentational/notes';
 import { AddTodo, AddReminder, SearchReminder } from './presentational/input';
-import { addTodoList, addNote, setNoteTitle, toggleTodo, setTodoListTitle, addTodo, setTodoListVisibilityFilter, setVisibilityFilter, searchReminder } from './actions/actions';
 
-import deepFreeze from 'deep-freeze';
-import expect from 'expect';
+import { addTodoList, addNote, setNoteTitle, toggleTodo, setTodoListTitle, addTodo, setTodoListVisibilityFilter, setVisibilityFilter, searchReminder, archiveNote, archiveList } from './actions/actions';
+
 
 const loadState = () => {
   try{
     let result = JSON.parse(localStorage.getItem('state'));
-    return result ? result : undefined;
+    return result ? {past: [], present: result, future: []} : undefined;
+    
   }
   catch(err){
     return undefined;
@@ -33,12 +34,13 @@ const loadState = () => {
 
 const saveState = (state) => {
   try{
-    localStorage.setItem('state', JSON.stringify(state));
+    localStorage.setItem('state', JSON.stringify(state.present));
   }
   catch(err){
     // Log
   }
 }
+
 
 const reminderApp = combineReducers(
   {
@@ -49,7 +51,7 @@ const reminderApp = combineReducers(
   }
 );
 
-const store = createStore(reminderApp, loadState());
+const store = createStore(undoable(reminderApp, {limit: 10}), loadState());
 
 const getVisibleTodos = (todos, visibilityFilter) => {
   if(visibilityFilter === 'SHOW_ALL'){
@@ -69,7 +71,7 @@ const getVisbleReminders = (reminders, visibilityFilter, search) => {
   let r = [];
   
   for (var i = 0; i < reminders.length; i++) {
-    if (reminders[i].title.includes(search) && (reminders[i].archived === false) ) {
+    if ( (reminders[i].archived == false) && reminders[i].title.includes(search) ) {
       r.push(reminders[i])
     }
   }
@@ -93,45 +95,6 @@ const getVisbleReminders = (reminders, visibilityFilter, search) => {
   return r;
 }
 
-const TodoList = ({ todos, onTodoClicked, color, title, onUpdate, id, currentVisibilityFilter }) => (
-  <div>
-    <Title
-      text= {title}
-      onUpdate = {onUpdate}
-      color = {color}
-    />
-    <AddTodo
-      color = {color}
-      listID = {id}
-      onAddTodo ={
-        (i, t, li, m ) => {
-          store.dispatch( addTodo(i, t, li, m ) );
-        }
-      }
-    />
-    <ul>
-      {
-        todos.map(todo => (
-          <Todo
-            key={ todo.id }
-            text = {todo.text}
-            completed = {todo.completed}
-            onTodoClicked={ () => onTodoClicked(todo) }
-          />
-        ))
-      }
-    </ul>
-
-    <Footer
-      currentVisibilityFilter = {currentVisibilityFilter}
-      listID = {id}
-      onFilterClicked = {
-        (v,i)=>{store.dispatch(setTodoListVisibilityFilter(i, v, Date()) )}
-      }
-    />
-  </div>
-);
-
 const Reminders = ({listsTodos, notes}) => 
   {
     return(
@@ -147,6 +110,11 @@ const Reminders = ({listsTodos, notes}) =>
                   onUpdate = {
                     (title) => {
                       store.dispatch(setNoteTitle(note.id, title, Date()) );
+                    }
+                  }
+                  onArchive = {
+                    () => {
+                      store.dispatch( archiveNote(note.id, Date() ));
                     }
                   }
                 />
@@ -173,6 +141,21 @@ const Reminders = ({listsTodos, notes}) =>
                   onUpdate = {
                     (title) => {
                       store.dispatch( setTodoListTitle(listTodo.id, title, Date()) );
+                    }
+                  }
+                  onArchive = {
+                    () => {
+                      store.dispatch( archiveList(listTodo.id, Date() ));
+                    }
+                  }
+                  onFilterClicked = {
+                    (v,i) => {
+                      store.dispatch( setTodoListVisibilityFilter(i, v, Date() ));
+                    }
+                  }
+                  onAddTodo = {
+                    (i, t, li, m ) => {
+                      store.dispatch( addTodo(i, t, li, m ) );
                     }
                   }
                 />
@@ -217,6 +200,16 @@ const RemindersApp = ({listsTodos, notes, visibilityFilter}) => (
           store.dispatch(setVisibilityFilter(f) );
         }
       }
+      undo = {
+        ()=> {
+          store.dispatch(ActionCreators.undo() );
+        }
+      }
+      redo = {
+        ()=> {
+          store.dispatch(ActionCreators.redo() );
+        }
+      }
     />
   </div>
 );
@@ -224,18 +217,20 @@ const RemindersApp = ({listsTodos, notes, visibilityFilter}) => (
 const render = () => {
   ReactDOM.render(
      <RemindersApp
-      { ...store.getState() } />,
+      { ...store.getState().present } />,
     document.getElementById('root')
   );
 };
 
 render();
 store.subscribe(render);
+/*
 const deb = () => {
-  console.log(store.getState());
+  console.log(store.getState().present);
 }
 deb();
 store.subscribe(deb);
+*/
 store.subscribe(() => {
   saveState(store.getState());
 });

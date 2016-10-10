@@ -17,7 +17,7 @@ const note = (state ={}, action) => {
 			}
 			
 		case 'SET_NOTE_COLOR':
-			if (state.id === action.payload.noteID) {
+			if (state.id === action.payload.id) {
 				return {
 					...state,
 					color: action.payload.newcolor,
@@ -27,11 +27,10 @@ const note = (state ={}, action) => {
 			}
 
 		case 'ARCHIVE_NOTE':
-			if (state.id === action.payload.noteID) {
+			if (state.id === action.payload.id) {
 				return {
 					...state,
-					archived: true,
-					modification: action.payload.modification
+					...action.payload
 				}
 			}
 		default:
