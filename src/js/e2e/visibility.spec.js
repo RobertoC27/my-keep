@@ -1,50 +1,24 @@
 import visibilityFilter from '../reducers/visibility';
 
-
-const stateBefore = {
-  visibilityFilter: 'SHOW_ALL',
-  search : ''
-}
-
 const testSetVisibilityFilter = () => {
-  const action =  {
+  const stateBefore = 'ALL';
+
+  const action = {
     type: 'SET_VISIBILITY_FILTER',
     payload: {
-      visibilityFilter: 'SHOW_NOTES'
+      visibilityFilter: 'HIDE_COMPLETED'
     }
   }
 
-  const stateAfter = {
-    visibilityFilter: 'SHOW_NOTES',
-    search: ''
-  }
+  const stateAfter = 'HIDE_COMPLETED';
 
   deepFreeze(stateBefore);
   deepFreeze(action);
-  expect(visibilityFilter(stateBefore, action)).toEqual(stateAfter);
+
+  expect(
+    visibilityFilter(stateBefore, action)
+  ).toEqual(stateAfter);
 }
 
-testSetVisibilityFilter();
-console.log('passed SET_VISIBILITY_FILTER')
-
-const testSetSearch = () => {
-  const action =  {
-    type: 'SET_SEARCH',
-    payload: {
-      search: 'buenas'
-    }
-  }
-
-  const stateAfter = {
-    visibilityFilter: 'SHOW_ALL',
-    search: 'buenas'
-  }
-
-  deepFreeze(stateBefore);
-  deepFreeze(action);
-  console.log(visibilityFilter(stateBefore, action));
-  expect(visibilityFilter(stateBefore, action)).toEqual(stateAfter);
-}
-
-testSetSearch();
-console.log('passed SET_SEARCH')
+testToggleTodo();
+console.log("All visibility filter tests passed!");
