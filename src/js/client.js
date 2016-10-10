@@ -11,6 +11,11 @@ import '../styles/index.scss';
 import {listsTodos} from './reducers/todos';
 import { notes } from './reducers/notes';
 
+import { Title, FilterLink } from './presentational/general';
+import { Todo } from './presentational/todolist';
+import { Footer, GeneralFooter} from './presentational/footers';
+import { Note } from './presentational/notes';
+import { AddTodo, AddReminder, SearchReminder } from './presentational/input';
 import { addTodoList, addNote, setNoteTitle, toggleTodo, setTodoListTitle, addTodo, setTodoListVisibilityFilter, setVisibilityFilter, searchReminder } from './actions/actions';
 
 import deepFreeze from 'deep-freeze';
@@ -35,17 +40,11 @@ const saveState = (state) => {
   }
 }
 
-const todoApp = combineReducers({
-  todos,
-  visibilityFilter
-});
-
-
 const reminderApp = combineReducers(
   {
     listsTodos,
-      notes,
-      visibilityFilter
+    notes,
+    visibilityFilter
 
   }
 );
@@ -70,7 +69,7 @@ const getVisbleReminders = (reminders, visibilityFilter, search) => {
   let r = [];
   
   for (var i = 0; i < reminders.length; i++) {
-    if (reminders[i].title.includes(search) && (reminders[i].archived == false) ) {
+    if (reminders[i].title.includes(search) && (reminders[i].archived === false) ) {
       r.push(reminders[i])
     }
   }
@@ -94,79 +93,6 @@ const getVisbleReminders = (reminders, visibilityFilter, search) => {
   return r;
 }
 
-const FilterLink = ({ visibilityFilter, currentVisibilityFilter, onFilterClicked, listID, children }) => {
-
-  if(visibilityFilter === currentVisibilityFilter){
-    return <strong>{ children }</strong>;
-  }
-
-  return <a
-    href="#"
-    onClick={
-      (e) => {
-        e.preventDefault();
-        onFilterClicked(visibilityFilter, listID );
-      }
-    }>
-    { children }</a>
-}
-
-const Footer = ({ currentVisibilityFilter, onFilterClicked, listID }) => (
-  <div class="todoFilter">
-    Show:
-    <FilterLink
-      visibilityFilter="SHOW_ALL"
-      currentVisibilityFilter={ currentVisibilityFilter }
-      onFilterClicked={ onFilterClicked }
-      listID={ listID }>All</FilterLink>
-    {' '}
-    <FilterLink
-      visibilityFilter="SHOW_COMPLETED"
-      currentVisibilityFilter={ currentVisibilityFilter }
-      onFilterClicked={ onFilterClicked }
-      listID={ listID }>Completed</FilterLink>
-    {' '}
-    <FilterLink
-      visibilityFilter="SHOW_ACTIVE"
-      currentVisibilityFilter={ currentVisibilityFilter }
-      onFilterClicked={ onFilterClicked }
-      listID={ listID }>Active</FilterLink>
-  </div>
-);
-
-const GeneralFooter = ({ currentVisibilityFilter, onFilterClicked}) => (
-  <div class="todoFilter">
-    Show:
-    <FilterLink
-      visibilityFilter="SHOW_ALL"
-      currentVisibilityFilter={ currentVisibilityFilter }
-      onFilterClicked={ onFilterClicked }
-    >All</FilterLink>
-    {' '}
-    <FilterLink
-      visibilityFilter="SHOW_NOTE"
-      currentVisibilityFilter={ currentVisibilityFilter }
-      onFilterClicked={ onFilterClicked }
-    >Notes</FilterLink>
-    {' '}
-    <FilterLink
-      visibilityFilter="SHOW_LIST"
-      currentVisibilityFilter={ currentVisibilityFilter }
-      onFilterClicked={ onFilterClicked }
-    >Todo-list</FilterLink>
-  </div>
-);
-
-const Todo = ({ text, completed, onTodoClicked }) => (
-  <li
-    style={{
-      textDecoration: completed ? 'line-through' : 'none'
-    }}
-    onClick={ onTodoClicked }>
-    { text }
-  </li>
-);
-
 const TodoList = ({ todos, onTodoClicked, color, title, onUpdate, id, currentVisibilityFilter }) => (
   <div>
     <Title
@@ -177,6 +103,11 @@ const TodoList = ({ todos, onTodoClicked, color, title, onUpdate, id, currentVis
     <AddTodo
       color = {color}
       listID = {id}
+      onAddTodo ={
+        (i, t, li, m ) => {
+          store.dispatch( addTodo(i, t, li, m ) );
+        }
+      }
     />
     <ul>
       {
@@ -198,40 +129,6 @@ const TodoList = ({ todos, onTodoClicked, color, title, onUpdate, id, currentVis
         (v,i)=>{store.dispatch(setTodoListVisibilityFilter(i, v, Date()) )}
       }
     />
-  </div>
-);
-
-const Title = ({text, onUpdate, color}) => {
-  let input;
-  return (
-    <div class = 'title'>
-        <input
-          
-          defaultValue = {text}
-          ref={ node => input = node }
-          onChange = {() => onUpdate(input.value)}
-          style ={
-            {border : 'none'},
-            {backgroundColor: color }
-          }
-        ></input>
-    </div>
-  );
-}
-
-const Note = ({ note, onUpdate, id }) => (
-  <div 
-    class = 'element'
-    style={ {backgroundColor: note.color }}
-  >
-    <Title 
-      text= {note.title}
-      onUpdate = {onUpdate}
-      id = {id}
-      color = {note.color}
-    />
-    <div class = 'clear'></div>
-    <div >{note.content}</div>
   </div>
 );
 
@@ -287,129 +184,28 @@ const Reminders = ({listsTodos, notes}) =>
     );
   }
 
-const VisibleNotes = connect(
-    (state, ownProps) => ({
-    notes: state.notes,
-    listsTodos: state.listsTodos
-    }),
-    (dispatch, ownProps) => ({
-      onTodoClicked: (todo) => {
-        dispatch(toggleTodo(todo.id))
-      }
-    })
-  )(Reminders);
-
-const VisibleTodos = connect(
-  (state, ownProps) => ({
-    todos: getVisibleTodos(state.todos, state.visibilityFilter)
-  }),
-  (dispatch, ownProps) => ({
-    onTodoClicked: (todo) => {
-      dispatch(toggleTodo(todo.id))
-    }
-  })
-  )(TodoList);
-
-const AddTodo = ({color, listID}) => {
-  let remind;
-
-  return (
-    <div>
-      <input 
-        type="text"
-        placeholder = 'Recordar'
-        ref={ node => remind = node }
-        style = {
-          {backgroundColor: color},
-          {border : 'none'}
-        }
-      />
-      <button
-        onClick={
-          () => { 
-            if (remind.value !== '') {
-              
-              store.dispatch(
-                addTodo(v4(), remind.value, listID, Date() )
-              );
-              remind.value = "";
-            }
-            
-          }
-        }
-      >Add todo</button>
-    </div>
-  );
-}
-
-
-
-const AddReminder = () => {
-  let input;
-  let title;
-  return (
-    <div class = 'add-reminder'>
-      <input type="text" placeholder = 'Título' ref={ node => title = node } />
-      <input type="text" placeholder = 'Recordar' ref={ node => input = node } />
-      <button
-        onClick={
-          () => { 
-            if (title.value !== '') {
-              store.dispatch(addTodoList(Date(), Date(), v4(), '#FFD180', title.value, false));
-              title.value = "";
-            }
-          }
-        }
-      >Add Todo-list</button>
-      <button
-        onClick={
-          () => { 
-            if (title.value !== '' && input.value !== '') {
-              store.dispatch(addNote(Date(), Date(), v4(), '#A3E2C7', title.value, input.value, true) );
-              input.value = "";
-              title.value = '';
-            }
-          }
-        }
-      >Add Note</button>
-    </div>
-  );
-}
-
-const SearchReminder = ({search}) => {
-  let input;
-  return (
-    <div>
-      <input 
-        type="text"
-        placeholder = 'Búsqueda'
-        ref={ node => input = node }
-        defaultValue = {search}
-        onChange = {
-          () => {
-            store.dispatch(searchReminder(input.value));
-          }
-        }
-      />
-      <div class ='clear'></div>
-    </div>
-  );
-}
-
-const TodosApp = ({ todos, visibilityFilter }) => (
-  <div>
-    <AddTodo />
-    <VisibleTodos />
-    <Footer />
-  </div>
-);
-
 const RemindersApp = ({listsTodos, notes, visibilityFilter}) => (
   <div>
     <SearchReminder
       search = {visibilityFilter.search}
+      onSearch = {
+        (inp) => {
+          store.dispatch( searchReminder(inp) );
+        }
+      }
     />
-    <AddReminder/>
+    <AddReminder
+      onAddNote = {
+        (creation,modification,id,color,title,content,archived) => {
+          store.dispatch( addNote(creation,modification,id,color,title,content,archived) );
+        }
+      }
+      onAddList = {  
+        (creation,modification,id,color,title,archived) => {
+          store.dispatch( addTodoList(creation,modification,id,color,title,archived) );
+        }
+      }
+    />
     <Reminders 
       listsTodos = {getVisbleReminders(listsTodos, visibilityFilter.visibilityFilter, visibilityFilter.search)}
       notes = {getVisbleReminders(notes, visibilityFilter.visibilityFilter, visibilityFilter.search)}
@@ -425,7 +221,6 @@ const RemindersApp = ({listsTodos, notes, visibilityFilter}) => (
   </div>
 );
 
-
 const render = () => {
   ReactDOM.render(
      <RemindersApp
@@ -433,14 +228,7 @@ const render = () => {
     document.getElementById('root')
   );
 };
-/*
-ReactDOM.render(
-  <Provider store={ store }>
-    <RemindersApp />
-  </Provider>,
-  document.getElementById('root')
-);
-*/
+
 render();
 store.subscribe(render);
 const deb = () => {

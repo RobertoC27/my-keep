@@ -99,6 +99,48 @@ const setVisibilityFilter = (visibilityFilter) => (
   }
 );
 
+const getVisibleTodos = (todos, visibilityFilter) => {
+  if(visibilityFilter === 'SHOW_ALL'){
+    return todos;
+  }
+
+  if(visibilityFilter === 'SHOW_COMPLETED'){
+    return todos.filter(t => t.completed);
+  }
+
+  if(visibilityFilter === 'SHOW_ACTIVE'){
+    return todos.filter(t => !t.completed);
+  }
+}
+
+const getVisbleReminders = (reminders, visibilityFilter, search) => {
+  let r = [];
+  
+  for (var i = 0; i < reminders.length; i++) {
+    if (reminders[i].title.includes(search) && (reminders[i].archived === false) ) {
+      r.push(reminders[i])
+    }
+  }
+
+  if (r.length > 0) {
+    
+    if (visibilityFilter === 'SHOW_ALL') {
+      return r;
+    }
+    if (visibilityFilter === 'SHOW_NOTE' && (r[0].todos === undefined )) {
+      
+      return r;
+    }
+    if (visibilityFilter === 'SHOW_LIST' && (r[0].todos !== undefined )) {
+      
+      return r;
+    }
+    return [];
+  }
+  
+  return r;
+}
+
 export {
   addTodoList,
   addNote,
@@ -108,5 +150,7 @@ export {
   addTodo,
   setTodoListVisibilityFilter,
   searchReminder,
-  setVisibilityFilter
+  setVisibilityFilter,
+  getVisibleTodos,
+  getVisbleReminders
 }
