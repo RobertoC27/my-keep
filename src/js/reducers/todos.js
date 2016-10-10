@@ -67,7 +67,12 @@ const listTodo = (state = {}, action) => {
       
     case 'SET_TODOLIST_VISIBILITY_FILTER':
       if(state.id === action.payload.id){
-        
+        a = {
+          type: 'SET_VISIBILITY_FILTER',
+          payload: {
+            visibilityFilter: action.payload.visibilityFilter
+          }
+        }
         return {
           ...state,
           visibilityFilter: action.payload.visibilityFilter,

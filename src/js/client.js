@@ -11,8 +11,10 @@ import '../styles/index.scss';
 import {listsTodos} from './reducers/todos';
 import { notes } from './reducers/notes';
 
-import { addTodoList, addNote, setNoteTitle, toggleTodo, setTodoListTitle, addTodo, setTodoListVisibilityFilter } from './actions/actions';
+import { addTodoList, addNote, setNoteTitle, toggleTodo, setTodoListTitle, addTodo, setTodoListVisibilityFilter, setVisibilityFilter, searchReminder } from './actions/actions';
 
+import deepFreeze from 'deep-freeze';
+import expect from 'expect';
 
 const loadState = () => {
   try{
@@ -42,8 +44,8 @@ const todoApp = combineReducers({
 const reminderApp = combineReducers(
   {
     listsTodos,
-    notes,
-    visibilityFilter
+      notes,
+      visibilityFilter
 
   }
 );
@@ -63,6 +65,97 @@ const getVisibleTodos = (todos, visibilityFilter) => {
     return todos.filter(t => !t.completed);
   }
 }
+
+const getVisbleReminders = (reminders, visibilityFilter, search) => {
+  let r = [];
+  
+  for (var i = 0; i < reminders.length; i++) {
+    if (reminders[i].title.includes(search) && (reminders[i].archived == false) ) {
+      r.push(reminders[i])
+    }
+  }
+
+  if (r.length > 0) {
+    
+    if (visibilityFilter === 'SHOW_ALL') {
+      return r;
+    }
+    if (visibilityFilter === 'SHOW_NOTE' && (r[0].todos === undefined )) {
+      
+      return r;
+    }
+    if (visibilityFilter === 'SHOW_LIST' && (r[0].todos !== undefined )) {
+      
+      return r;
+    }
+    return [];
+  }
+  
+  return r;
+}
+
+const FilterLink = ({ visibilityFilter, currentVisibilityFilter, onFilterClicked, listID, children }) => {
+
+  if(visibilityFilter === currentVisibilityFilter){
+    return <strong>{ children }</strong>;
+  }
+
+  return <a
+    href="#"
+    onClick={
+      (e) => {
+        e.preventDefault();
+        onFilterClicked(visibilityFilter, listID );
+      }
+    }>
+    { children }</a>
+}
+
+const Footer = ({ currentVisibilityFilter, onFilterClicked, listID }) => (
+  <div class="todoFilter">
+    Show:
+    <FilterLink
+      visibilityFilter="SHOW_ALL"
+      currentVisibilityFilter={ currentVisibilityFilter }
+      onFilterClicked={ onFilterClicked }
+      listID={ listID }>All</FilterLink>
+    {' '}
+    <FilterLink
+      visibilityFilter="SHOW_COMPLETED"
+      currentVisibilityFilter={ currentVisibilityFilter }
+      onFilterClicked={ onFilterClicked }
+      listID={ listID }>Completed</FilterLink>
+    {' '}
+    <FilterLink
+      visibilityFilter="SHOW_ACTIVE"
+      currentVisibilityFilter={ currentVisibilityFilter }
+      onFilterClicked={ onFilterClicked }
+      listID={ listID }>Active</FilterLink>
+  </div>
+);
+
+const GeneralFooter = ({ currentVisibilityFilter, onFilterClicked}) => (
+  <div class="todoFilter">
+    Show:
+    <FilterLink
+      visibilityFilter="SHOW_ALL"
+      currentVisibilityFilter={ currentVisibilityFilter }
+      onFilterClicked={ onFilterClicked }
+    >All</FilterLink>
+    {' '}
+    <FilterLink
+      visibilityFilter="SHOW_NOTE"
+      currentVisibilityFilter={ currentVisibilityFilter }
+      onFilterClicked={ onFilterClicked }
+    >Notes</FilterLink>
+    {' '}
+    <FilterLink
+      visibilityFilter="SHOW_LIST"
+      currentVisibilityFilter={ currentVisibilityFilter }
+      onFilterClicked={ onFilterClicked }
+    >Todo-list</FilterLink>
+  </div>
+);
 
 const Todo = ({ text, completed, onTodoClicked }) => (
   <li
@@ -142,13 +235,11 @@ const Note = ({ note, onUpdate, id }) => (
   </div>
 );
 
-
-
 const Reminders = ({listsTodos, notes}) => 
   {
     return(
       <div>
-        <div>
+        <div class = 'notas'>
           {
             notes.map( note => {
               return(
@@ -166,7 +257,7 @@ const Reminders = ({listsTodos, notes}) =>
             })
           }
         </div>
-        <div>
+        <div class = 'listas'>
           {
             listsTodos.map(listTodo => {
               return (
@@ -195,7 +286,6 @@ const Reminders = ({listsTodos, notes}) =>
       </div>
     );
   }
-
 
 const VisibleNotes = connect(
     (state, ownProps) => ({
@@ -258,21 +348,14 @@ const AddReminder = () => {
   let input;
   let title;
   return (
-    <div>
+    <div class = 'add-reminder'>
       <input type="text" placeholder = 'Título' ref={ node => title = node } />
       <input type="text" placeholder = 'Recordar' ref={ node => input = node } />
       <button
         onClick={
           () => { 
             if (title.value !== '') {
-              store.dispatch( 
-                addTodoList(
-                  Date(),
-                  Date(),
-                  v4(),
-                  '#FFD180',
-                  title.value
-              ));
+              store.dispatch(addTodoList(Date(), Date(), v4(), '#FFD180', title.value, false));
               title.value = "";
             }
           }
@@ -281,10 +364,8 @@ const AddReminder = () => {
       <button
         onClick={
           () => { 
-            if (title.value !== '') {
-              store.dispatch( 
-                addNote(Date(), Date(), v4(), '#A3E2C7', title.value, input.value) 
-              );
+            if (title.value !== '' && input.value !== '') {
+              store.dispatch(addNote(Date(), Date(), v4(), '#A3E2C7', title.value, input.value, true) );
               input.value = "";
               title.value = '';
             }
@@ -295,45 +376,25 @@ const AddReminder = () => {
   );
 }
 
-const FilterLink = ({ visibilityFilter, currentVisibilityFilter, onFilterClicked, listID, children }) => {
-
-  if(visibilityFilter === currentVisibilityFilter){
-    return <strong>{ children }</strong>;
-  }
-
-  return <a
-    href="#"
-    onClick={
-      (e) => {
-        e.preventDefault();
-        onFilterClicked(visibilityFilter, listID );
-      }
-    }>
-    { children }</a>
+const SearchReminder = ({search}) => {
+  let input;
+  return (
+    <div>
+      <input 
+        type="text"
+        placeholder = 'Búsqueda'
+        ref={ node => input = node }
+        defaultValue = {search}
+        onChange = {
+          () => {
+            store.dispatch(searchReminder(input.value));
+          }
+        }
+      />
+      <div class ='clear'></div>
+    </div>
+  );
 }
-
-const Footer = ({ currentVisibilityFilter, onFilterClicked, listID }) => (
-  <div class="todoFilter">
-    Show:
-    <FilterLink
-      visibilityFilter="SHOW_ALL"
-      currentVisibilityFilter={ currentVisibilityFilter }
-      onFilterClicked={ onFilterClicked }
-      listID={ listID }>All</FilterLink>
-    {' '}
-    <FilterLink
-      visibilityFilter="SHOW_COMPLETED"
-      currentVisibilityFilter={ currentVisibilityFilter }
-      onFilterClicked={ onFilterClicked }
-      listID={ listID }>Completed</FilterLink>
-    {' '}
-    <FilterLink
-      visibilityFilter="SHOW_ACTIVE"
-      currentVisibilityFilter={ currentVisibilityFilter }
-      onFilterClicked={ onFilterClicked }
-      listID={ listID }>Active</FilterLink>
-  </div>
-);
 
 const TodosApp = ({ todos, visibilityFilter }) => (
   <div>
@@ -343,13 +404,24 @@ const TodosApp = ({ todos, visibilityFilter }) => (
   </div>
 );
 
-const RemindersApp = ({listsTodos, notes}) => (
+const RemindersApp = ({listsTodos, notes, visibilityFilter}) => (
   <div>
+    <SearchReminder
+      search = {visibilityFilter.search}
+    />
     <AddReminder/>
     <Reminders 
-      listsTodos = {listsTodos}
-      notes = {notes}
+      listsTodos = {getVisbleReminders(listsTodos, visibilityFilter.visibilityFilter, visibilityFilter.search)}
+      notes = {getVisbleReminders(notes, visibilityFilter.visibilityFilter, visibilityFilter.search)}
       />
+    <GeneralFooter
+      currentVisibilityFilter = {visibilityFilter.visibilityFilter}
+      onFilterClicked = {
+        (f) => {
+          store.dispatch(setVisibilityFilter(f) );
+        }
+      }
+    />
   </div>
 );
 

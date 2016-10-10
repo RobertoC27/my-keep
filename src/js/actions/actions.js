@@ -80,6 +80,25 @@ const setTodoListVisibilityFilter = (id, visibilityFilter, modification) => (
     }
   }
 );
+
+const searchReminder = (search) => (
+  {
+    type: 'SET_SEARCH',
+    payload: {
+      search
+    }
+  }
+);
+
+const setVisibilityFilter = (visibilityFilter) => (
+  {
+    type : 'SET_VISIBILITY_FILTER',
+    payload: {
+      visibilityFilter
+    }
+  }
+);
+
 export {
   addTodoList,
   addNote,
@@ -87,5 +106,7 @@ export {
   toggleTodo,
   setTodoListTitle,
   addTodo,
-  setTodoListVisibilityFilter
+  setTodoListVisibilityFilter,
+  searchReminder,
+  setVisibilityFilter
 }
