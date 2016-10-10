@@ -121,6 +121,17 @@ const archiveList = (id, modification) => (
   }
 );
 
+const deleteTodo = (id, listID, modification) =>(
+  {
+    type:'DELETE_TODO',
+    payload:{
+      id,
+      listID,
+      modification
+    }
+  }
+);
+
 export {
   addTodoList,
   addNote,
@@ -132,5 +143,6 @@ export {
   searchReminder,
   setVisibilityFilter,
   archiveNote,
-  archiveList
+  archiveList,
+  deleteTodo
 }

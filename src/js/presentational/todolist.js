@@ -2,17 +2,25 @@ import React from 'react';
 import {Title, ArchiveMe} from './general';
 import { AddTodo } from './input';
 import { Footer} from './footers';
-const Todo = ({ text, completed, onTodoClicked }) => (
-  <li
-    style={{
-      textDecoration: completed ? 'line-through' : 'none'
-    }}
-    onClick={ onTodoClicked }>
-    { text }
-  </li>
+const Todo = ({ text, completed, onTodoClicked, onTodoRemove }) => (
+  <div>
+    <div>
+      <li
+        style={{
+          textDecoration: completed ? 'line-through' : 'none'
+        }}
+        onClick={ onTodoClicked }
+      >
+        { text }
+      </li>
+    </div>
+    <div
+      onClick = {onTodoRemove}
+    >x</div>
+  </div>
 );
 
-const TodoList = ({ todos, onTodoClicked, color, title, onUpdate, id, currentVisibilityFilter, onArchive, onFilterClicked, onAddTodo }) => (
+const TodoList = ({ todos, onTodoClicked, color, title, onUpdate, id, currentVisibilityFilter, onArchive, onFilterClicked, onAddTodo, onTodoRemove }) => (
   <div>
     <Title
       text= {title}
@@ -26,12 +34,13 @@ const TodoList = ({ todos, onTodoClicked, color, title, onUpdate, id, currentVis
     />
     <ul>
       {
-        todos.map(todo => (
+        todos.map(todo => (          
           <Todo
             key={ todo.id }
             text = {todo.text}
             completed = {todo.completed}
             onTodoClicked={ () => onTodoClicked(todo) }
+            onTodoRemove = { () => onTodoRemove(todo) }
           />
         ))
       }

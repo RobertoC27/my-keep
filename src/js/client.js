@@ -19,7 +19,7 @@ import { Footer, GeneralFooter} from './presentational/footers';
 import { Note } from './presentational/notes';
 import { AddTodo, AddReminder, SearchReminder } from './presentational/input';
 
-import { addTodoList, addNote, setNoteTitle, toggleTodo, setTodoListTitle, addTodo, setTodoListVisibilityFilter, setVisibilityFilter, searchReminder, archiveNote, archiveList } from './actions/actions';
+import { addTodoList, addNote, setNoteTitle, toggleTodo, setTodoListTitle, addTodo, setTodoListVisibilityFilter, setVisibilityFilter, searchReminder, archiveNote, archiveList, deleteTodo } from './actions/actions';
 
 
 const loadState = () => {
@@ -158,6 +158,11 @@ const Reminders = ({listsTodos, notes}) =>
                   onAddTodo = {
                     (i, t, li, m ) => {
                       store.dispatch( addTodo(i, t, li, m ) );
+                    }
+                  }
+                  onTodoRemove = {
+                    (todo) => {
+                      store.dispatch( deleteTodo(todo.id, listTodo.id, Date()) );
                     }
                   }
                 />
