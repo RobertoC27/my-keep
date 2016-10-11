@@ -3,9 +3,10 @@ import {Title, ArchiveMe} from './general';
 import { AddTodo } from './input';
 import { Footer} from './footers';
 const Todo = ({ text, completed, onTodoClicked, onTodoRemove }) => (
-  <div>
+  <div >
     <div>
       <li
+        class = 'fl'
         style={{
           textDecoration: completed ? 'line-through' : 'none'
         }}
@@ -13,15 +14,21 @@ const Todo = ({ text, completed, onTodoClicked, onTodoRemove }) => (
       >
         { text }
       </li>
+      <div
+        class = 'fl remove'
+        onClick = {onTodoRemove}
+      ></div>
+      <div class='clear'></div>
     </div>
-    <div
-      onClick = {onTodoRemove}
-    >x</div>
+    
+
   </div>
 );
 
 const TodoList = ({ todos, onTodoClicked, color, title, onUpdate, id, currentVisibilityFilter, onArchive, onFilterClicked, onAddTodo, onTodoRemove }) => (
-  <div>
+  <div
+    class = 'element'
+  >
     <Title
       text= {title}
       onUpdate = {onUpdate}
@@ -42,6 +49,7 @@ const TodoList = ({ todos, onTodoClicked, color, title, onUpdate, id, currentVis
             onTodoClicked={ () => onTodoClicked(todo) }
             onTodoRemove = { () => onTodoRemove(todo) }
           />
+          
         ))
       }
     </ul>

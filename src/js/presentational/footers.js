@@ -2,7 +2,7 @@ import React from 'react';
 import { FilterLink, TimeTravel  } from './general';
 
 const Footer = ({ currentVisibilityFilter, onFilterClicked, listID }) => (
-  <div class="todoFilter">
+  <div class="footer local">
     Show:
     <FilterLink
       visibilityFilter="SHOW_ALL"
@@ -25,7 +25,7 @@ const Footer = ({ currentVisibilityFilter, onFilterClicked, listID }) => (
 );
 
 const GeneralFooter = ({ currentVisibilityFilter, onFilterClicked, undo, redo }) => (
-  <div class="todoFilter">
+  <div class="footer general">
     Show:
     <FilterLink
       visibilityFilter="SHOW_ALL"

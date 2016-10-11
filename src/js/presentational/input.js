@@ -5,27 +5,24 @@ const AddTodo = ({color, listID, onAddTodo}) => {
   let remind;
 
   return (
-    <div>
+    <div class='addt'>
       <input 
         type="text"
         placeholder = 'Recordar'
         ref={ node => remind = node }
-        style = {
-          {backgroundColor: color},
-          {border : 'none'}
-        }
+        
       />
       <button
+        class ='agregar'
         onClick={
           () => { 
             if (remind.value !== '') {
               onAddTodo(v4(), remind.value, listID, Date() )
               remind.value = "";
             }
-            
           }
         }
-      >Add todo</button>
+      ></button>
     </div>
   );
 }

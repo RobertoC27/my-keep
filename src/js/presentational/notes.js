@@ -1,11 +1,11 @@
 import React from 'react';
-import { Title, ArchiveMe } from './general';
+import { Title, ArchiveMe, ColorMe } from './general';
 
 
 const Note = ({ note, onUpdate, id, onArchive }) => (
   <div 
     class = 'element'
-    style={ {backgroundColor: note.color }}
+    style = {{backgroudColor: note.color}}
   >
     <Title 
       text= {note.title}
@@ -14,11 +14,12 @@ const Note = ({ note, onUpdate, id, onArchive }) => (
       color = {note.color}
     />
     
-    <div class = 'clear'></div>
+    
     <div >{note.content}</div>
     <ArchiveMe
       onArchive = {onArchive}
     />
+    <div class = 'clear'></div>
   </div>
 );
 

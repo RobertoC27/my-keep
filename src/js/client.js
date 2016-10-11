@@ -13,13 +13,14 @@ import '../styles/index.scss';
 import {listsTodos} from './reducers/todos';
 import { notes } from './reducers/notes';
 
-import { Title, FilterLink, ArchiveMe} from './presentational/general';
-import { Todo, TodoList } from './presentational/todolist';
-import { Footer, GeneralFooter} from './presentational/footers';
+
+import { TodoList } from './presentational/todolist';
+import { GeneralFooter} from './presentational/footers';
 import { Note } from './presentational/notes';
-import { AddTodo, AddReminder, SearchReminder } from './presentational/input';
+import { AddReminder, SearchReminder } from './presentational/input';
 
 import { addTodoList, addNote, setNoteTitle, toggleTodo, setTodoListTitle, addTodo, setTodoListVisibilityFilter, setVisibilityFilter, searchReminder, archiveNote, archiveList, deleteTodo } from './actions/actions';
+
 
 
 const loadState = () => {
@@ -35,10 +36,10 @@ const loadState = () => {
 
 const saveState = (state) => {
   try{
-    localStorage.setItem('state', JSON.stringify(state.present));
+    localStorage.setItem('state', JSON.stringify(state));
   }
   catch(err){
-    // Log
+    //log
   }
 }
 
@@ -170,6 +171,7 @@ const Reminders = ({listsTodos, notes}) =>
             })
           }
         </div>
+        <div class = 'clear'></div>
       </div>
     );
   }
@@ -231,13 +233,13 @@ const render = () => {
 
 render();
 store.subscribe(render);
-/*
+
 const deb = () => {
   console.log(store.getState().present);
 }
 deb();
 store.subscribe(deb);
-*/
+
 store.subscribe(() => {
-  saveState(store.getState());
+  saveState(store.getState().present);
 });

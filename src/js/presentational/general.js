@@ -5,14 +5,12 @@ const Title = ({text, onUpdate, color}) => {
   return (
     <div class = 'title'>
         <input
-          
+          class = 't1'
+          type = 'text'
+          placeholder= 'Título'
           defaultValue = {text}
           ref={ node => input = node }
           onChange = {() => onUpdate(input.value)}
-          style ={
-            {border : 'none'},
-            {backgroundColor: color }
-          }
         ></input>
     </div>
   );
@@ -37,10 +35,13 @@ const FilterLink = ({ visibilityFilter, currentVisibilityFilter, onFilterClicked
 
 const ArchiveMe = ({ onArchive }) => {
   return (
-    <div>
+    <div class='tooltip'>
       <button
+        class = 'archivar'
         onClick = {onArchive}
-      >Archive</button>
+      ></button>
+      <span class='tooltiptext'>Archive</span>
+
     </div>
   );
 }
@@ -59,4 +60,16 @@ const TimeTravel = ({undo, redo}) => (
   </div>
 );
 
-export { Title, FilterLink, ArchiveMe, TimeTravel };
+const ColorMe = ({def, onColorChange}) => {
+  let input;
+  return (
+    <input type = 'color'
+      defaultValue={def}
+      ref={ node => input = node }
+      onChange={onColorChange(input.value)}
+    >
+    </input>
+  );
+}
+
+export { Title, FilterLink, ArchiveMe, TimeTravel, ColorMe };
