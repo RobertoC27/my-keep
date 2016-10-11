@@ -26,6 +26,7 @@ const Footer = ({ currentVisibilityFilter, onFilterClicked, listID }) => (
 
 const GeneralFooter = ({ currentVisibilityFilter, onFilterClicked, undo, redo }) => (
   <div class="footer general">
+    
     Show:
     <FilterLink
       visibilityFilter="SHOW_ALL"
@@ -48,6 +49,7 @@ const GeneralFooter = ({ currentVisibilityFilter, onFilterClicked, undo, redo })
       undo = {undo}
       redo = {redo}
     />
+    <div class = 'clear'></div>
   </div>
 );
 

@@ -47,15 +47,15 @@ const ArchiveMe = ({ onArchive }) => {
 }
 
 const TimeTravel = ({undo, redo}) => (
-  <div>
+  <div class='time-travel'>
     <button
+      class='backw'
       onClick = {undo}
-    >
-    Un-do</button>
+    ></button>
     <button
+      class='forw'
       onClick = {redo}
-    >
-    Re-do</button>
+    ></button>
     
   </div>
 );

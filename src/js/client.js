@@ -166,6 +166,8 @@ const Reminders = ({listsTodos, notes}) =>
                       store.dispatch( deleteTodo(todo.id, listTodo.id, Date()) );
                     }
                   }
+                  mod = {listTodo.modification}
+                  creation={listTodo.creation}
                 />
               );
             })
